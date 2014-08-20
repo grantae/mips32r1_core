@@ -9,6 +9,7 @@
  *   1.0   23-Jul-2011  GEA       Initial design.
  *   2.0   26-May-2012  GEA       Release version with CP0.
  *   2.01   1-Nov-2012  GEA       Fixed issue with Jal.
+ *   ***   ***********  ***       [Further changes tracked in source control]
  *
  * Standards/Formatting:
  *   Verilog 2001, 4 soft tab, wide column.
@@ -38,7 +39,7 @@ module Hazard_Detection(
     input  MEM_MemRead,
     input  MEM_MemWrite,        // Needed for Store Conditional which writes to a register
     input  InstMem_Read,
-    input  InstMem_Ready,
+    input  InstMem_Ack,
     input  Mfc0,                // Using fwd mux; not part of haz/fwd.
     input  IF_Exception_Stall,
     input  ID_Exception_Stall,
@@ -162,7 +163,7 @@ module Hazard_Detection(
     assign  M_Stall = IF_Stall | M_Stall_Controller;
     assign EX_Stall = (EX_Stall_1 | EX_Stall_2 | EX_Exception_Stall) | EX_ALU_Stall | M_Stall;
     assign ID_Stall = (ID_Stall_1 | ID_Stall_2 | ID_Stall_3 | ID_Stall_4 | ID_Exception_Stall) | EX_Stall;
-    assign IF_Stall = InstMem_Read | InstMem_Ready | IF_Exception_Stall;
+    assign IF_Stall = InstMem_Read | InstMem_Ack | IF_Exception_Stall;
     
     // Forwarding Control Final Assignments
     assign ID_RsFwdSel = (ID_Fwd_1) ? 2'b01 : ((ID_Fwd_3) ? 2'b10 : 2'b00);

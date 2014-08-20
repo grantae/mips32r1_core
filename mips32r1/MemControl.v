@@ -11,6 +11,7 @@
  *                                An advanced data memory controller capable of
  *                                handling big/little endian, atomic and unaligned
  *                                memory accesses.
+ *   ***   ***********  ***       [Further changes tracked in source control]
  *
  * Standards/Formatting:
  *   Verilog 2001, 4 soft tab, wide column.
@@ -30,7 +31,7 @@ module MemControl(
     input  [31:0] MReadData,        // Data from Memory
     input  MemRead,                 // Memory Read command from CPU
     input  MemWrite,                // Memory Write command from CPU
-    input  DataMem_Ready,           // Ready signal from Memory
+    input  DataMem_Ack,             // Ready signal from Memory
     input  Byte,                    // Load/Store is Byte (8-bit)
     input  Half,                    // Load/Store is Half (16-bit)
     input  SignExtend,              // Sub-word load should be sign extended
@@ -122,9 +123,9 @@ module MemControl(
     
     reg RW_Mask;
     always @(posedge clock) begin
-        RW_Mask <= (reset) ? 1'b0 : (((MemWrite | MemRead) & DataMem_Ready) ? 1'b1 : ((~M_Stall & ~IF_Stall) ? 1'b0 : RW_Mask));
+        RW_Mask <= (reset) ? 1'b0 : (((MemWrite | MemRead) & DataMem_Ack) ? 1'b1 : ((~M_Stall & ~IF_Stall) ? 1'b0 : RW_Mask));
     end
-    assign M_Stall = ReadEnable | (WriteEnable != 4'b0000) | DataMem_Ready    | M_Exception_Stall;
+    assign M_Stall = ReadEnable | (WriteEnable != 4'b0000) | DataMem_Ack | M_Exception_Stall;
     assign ReadEnable  = ReadCondition  & ~RW_Mask;
     
     wire Half_Access_L  = (Address[1] ^  BE);

@@ -9,6 +9,7 @@
  *   1.0   23-Jul-2011  GEA       Initial design.
  *   2.0   26-May-2012  GEA       Release version with CP0.
  *   2.01   1-Nov-2012  GEA       Fixed issue with Jal.
+ *   ***   ***********  ***       [Further changes tracked in source control]
  *
  * Standards/Formatting:
  *   Verilog 2001, 4 soft tab, wide column.
@@ -25,7 +26,7 @@ module Processor(
     input  NMI,                         // Non-maskable interrupt
     // Data Memory Interface
     input  [31:0] DataMem_In,
-    input  DataMem_Ready,
+    input  DataMem_Ack,
     output DataMem_Read, 
     output [3:0]  DataMem_Write,        // 4-bit Write, one for each byte in word.
     output [29:0] DataMem_Address,      // Addresses are words, not bytes.
@@ -33,7 +34,7 @@ module Processor(
     // Instruction Memory Interface
     input  [31:0] InstMem_In,
     output [29:0] InstMem_Address,      // Addresses are words, not bytes.
-    input  InstMem_Ready,
+    input  InstMem_Ack,
     output InstMem_Read,
     output [7:0] IP                     // Pending interrupts (diagnostic)
     );
@@ -167,8 +168,8 @@ module Processor(
     assign InstMem_Address = IF_PCOut[31:2];
     assign DataMem_Address = M_ALUResult[31:2];
     always @(posedge clock) begin
-        IRead <= (reset) ? 1'b1 : ~InstMem_Ready;
-        IReadMask <= (reset) ? 1'b0 : ((IRead & InstMem_Ready) ? 1'b1 : ((~IF_Stall) ? 1'b0 : IReadMask));
+        IRead <= (reset) ? 1'b1 : ~InstMem_Ack;
+        IReadMask <= (reset) ? 1'b0 : ((IRead & InstMem_Ack) ? 1'b1 : ((~IF_Stall) ? 1'b0 : IReadMask));
     end
     assign InstMem_Read = IRead & ~IReadMask;
 
@@ -239,7 +240,7 @@ module Processor(
         .MEM_MemRead         (M_MemRead),
         .MEM_MemWrite        (M_MemWrite),
         .InstMem_Read        (InstMem_Read),
-        .InstMem_Ready       (InstMem_Ready),
+        .InstMem_Ack         (InstMem_Ack),
         .Mfc0                (ID_Mfc0),
         .IF_Exception_Stall  (IF_Exception_Stall),
         .ID_Exception_Stall  (ID_Exception_Stall),
@@ -624,7 +625,7 @@ module Processor(
         .MReadData     (DataMem_In),
         .MemRead       (M_MemRead),
         .MemWrite      (M_MemWrite),
-        .DataMem_Ready (DataMem_Ready),
+        .DataMem_Ack   (DataMem_Ack),
         .Byte          (M_MemByte),
         .Half          (M_MemHalf),
         .SignExtend    (M_MemSignExtend),
