@@ -16,7 +16,7 @@
  *
  * Description:
  *   The top-level MIPS32 Processor. This file is mostly the instantiation
- *   and wiring of the building blocks of the processor according to the 
+ *   and wiring of the building blocks of the processor according to the
  *   hardware design diagram. It contains very little logic itself.
  */
 module Processor(
@@ -27,7 +27,7 @@ module Processor(
     // Data Memory Interface
     input  [31:0] DataMem_In,
     input  DataMem_Ack,
-    output DataMem_Read, 
+    output DataMem_Read,
     output [3:0]  DataMem_Write,        // 4-bit Write, one for each byte in word.
     output [29:0] DataMem_Address,      // Addresses are words, not bytes.
     output [31:0] DataMem_Out,
@@ -636,9 +636,7 @@ module Processor(
         .Left          (M_Left),
         .Right         (M_Right),
         .M_Exception_Stall (M_Exception_Stall),
-        
-        .IF_Stall (IF_Stall),
-        
+        .IF_Stall      (IF_Stall),
         .DataOut       (M_MemReadData),
         .MWriteData    (DataMem_Out),
         .WriteEnable   (DataMem_Write),

@@ -1,4 +1,4 @@
-    `timescale 1ns / 1ps
+`timescale 1ns / 1ps
 /*
  * File         : Control.v
  * Project      : University of Utah, XUM Project MIPS32 core
@@ -66,13 +66,13 @@ module Control(
     output RegWrite,
     output MemtoReg
     );
-    
+
     `include "MIPS_Parameters.v"
 
     wire Movc;
     wire Branch, Branch_EQ, Branch_GTZ, Branch_LEZ, Branch_NEQ, Branch_GEZ, Branch_LTZ;
     wire Unaligned_Mem;
-    
+
     reg [15:0] Datapath;
     assign PCSrc[0]      = Datapath[14];
     assign Link          = Datapath[13];
@@ -89,12 +89,12 @@ module Control(
     assign MemSignExtend = Datapath[2];
     assign RegWrite      = Datapath[1];
     assign MemtoReg      = Datapath[0];
-       
+
     reg [2:0] DP_Exceptions;
     assign ID_CanErr = DP_Exceptions[2];
     assign EX_CanErr = DP_Exceptions[1];
     assign  M_CanErr = DP_Exceptions[0];
-    
+
     // Set the main datapath control signals based on the Op Code
     always @(*) begin
         if (ID_Stall)
@@ -186,7 +186,7 @@ module Control(
                             OpRt_Tnei   : Datapath <= DP_Tnei;
                             default     : Datapath <= DP_None;
                         endcase
-                    end                         
+                    end
                 Op_Beq     : Datapath <= DP_Beq;
                 Op_Bgtz    : Datapath <= DP_Bgtz;
                 Op_Blez    : Datapath <= DP_Blez;
@@ -310,7 +310,7 @@ module Control(
                         OpRt_Tnei   : begin DP_Hazards <= HAZ_Tnei;   DP_Exceptions <= EXC_Tnei;   end
                         default     : begin DP_Hazards <= 8'hxx;      DP_Exceptions <= 3'bxxx;     end
                     endcase
-                end                         
+                end
             Op_Beq     : begin DP_Hazards <= HAZ_Beq;  DP_Exceptions <= EXC_Beq;  end
             Op_Bgtz    : begin DP_Hazards <= HAZ_Bgtz; DP_Exceptions <= EXC_Bgtz; end
             Op_Blez    : begin DP_Hazards <= HAZ_Blez; DP_Exceptions <= EXC_Blez; end
@@ -445,14 +445,14 @@ module Control(
         end
     end
 
-    /*** 
+    /***
      These remaining options cover portions of the datapath that are not
      controlled directly by the datapath bits. Note that some refer to bits of
      the opcode or other fields, which breaks the otherwise fully-abstracted view
      of instruction encodings. Make sure when adding custom instructions that
      no false positives/negatives are generated here.
      ***/
-     
+
     // Branch Detection: Options are mutually exclusive.
     assign Branch_EQ  =  OpCode[2] & ~OpCode[1] & ~OpCode[0] &  Cmp_EQ;
     assign Branch_GTZ =  OpCode[2] &  OpCode[1] &  OpCode[0] &  Cmp_GZ;
@@ -460,10 +460,10 @@ module Control(
     assign Branch_NEQ =  OpCode[2] & ~OpCode[1] &  OpCode[0] & ~Cmp_EQ;
     assign Branch_GEZ = ~OpCode[2] &  Rt[0] & Cmp_GEZ;
     assign Branch_LTZ = ~OpCode[2] & ~Rt[0] & Cmp_LZ;
-    
+
     assign Branch = Branch_EQ | Branch_GTZ | Branch_LEZ | Branch_NEQ | Branch_GEZ | Branch_LTZ;
     assign PCSrc[1] = (Datapath[15] & ~Datapath[14]) ? Branch : Datapath[15];
-    
+
     /* In MIPS32, all Branch and Jump operations execute the Branch Delay Slot,
      * or next instruction, regardless if the branch is taken or not. The exception
      * is the "Branch Likely" instruction group. These are deprecated, however, and not
@@ -474,7 +474,7 @@ module Control(
 
     // Indicator that next instruction is a Branch Delay Slot.
     assign NextIsDelay = Datapath[15] | Datapath[14];
-    
+
     // Sign- or Zero-Extension Control. The only ops that require zero-extension are
     // Andi, Ori, and Xori. The following also zero-extends 'lui', however it does not alter the effect of lui.
     assign SignExtend = (OpCode[5:2] != 4'b0011);
@@ -482,28 +482,28 @@ module Control(
     // Move Conditional
     assign Movn = Movc &  Funct[0];
     assign Movz = Movc & ~Funct[0];
-    
+
     // Coprocessor 0 (Mfc0, Mtc0) control signals.
     assign Mfc0 = ((OpCode == Op_Type_CP0) && (Rs == OpRs_MF));
     assign Mtc0 = ((OpCode == Op_Type_CP0) && (Rs == OpRs_MT));
     assign Eret = ((OpCode == Op_Type_CP0) && (Rs == OpRs_ERET) && (Funct == Funct_ERET));
-    
+
     // Coprocessor 1,2,3 accesses (not implemented)
     assign CP1 = (OpCode == Op_Type_CP1);
     assign CP2 = (OpCode == Op_Type_CP2);
     assign CP3 = (OpCode == Op_Type_CP3);
-    
+
     // Exceptions found in ID
     assign EXC_Sys = ((OpCode == Op_Type_R) && (Funct == Funct_Syscall));
     assign EXC_Bp  = ((OpCode == Op_Type_R) && (Funct == Funct_Break));
-    
+
     // Unaligned Memory Accesses (lwl, lwr, swl, swr)
     assign Unaligned_Mem = OpCode[5] & ~OpCode[4] & OpCode[1] & ~OpCode[0];
     assign Left  = Unaligned_Mem & ~OpCode[2];
     assign Right = Unaligned_Mem &  OpCode[2];
-    
+
     // TODO: Reserved Instruction Exception must still be implemented
     assign EXC_RI  = 0;
-    
+
 endmodule
 

@@ -19,20 +19,20 @@
 
 
 /*** Exception Vector Locations ***
-     
+
      When the CPU powers up or is reset, it will begin execution at 'EXC_Vector_Base_Reset'.
      All other exceptions are the sum of a base address and offset:
       - The base address is either a bootstrap or normal value. It is controlled by
-        the 'BEV' bit in the CP0 'Status' register. Both base addresses can be mapped to 
+        the 'BEV' bit in the CP0 'Status' register. Both base addresses can be mapped to
         the same location.
       - The offset address is either a standard offset (which is always used for
         non-interrupt general exceptions in this processor because it lacks TLB Refill
         and Cache errors), or a special interrupt-only offset for interrupts, which is
         enabled with the 'IV' bit in the CP0 'Cause' register.
-      
+
      Current Setup:
         General exceptions go to 0x0. Interrupts go to 0x8. Booting starts at 0x10.
-*/   
+*/
 parameter [31:0] EXC_Vector_Base_Reset          = 32'h0000_0010;    // MIPS Standard is 0xBFC0_0000
 parameter [31:0] EXC_Vector_Base_Other_NoBoot   = 32'h0000_0000;    // MIPS Standard is 0x8000_0000
 parameter [31:0] EXC_Vector_Base_Other_Boot     = 32'h0000_0000;    // MIPS Standard is 0xBFC0_0200
@@ -45,7 +45,7 @@ parameter [31:0] EXC_Vector_Offset_Special      = 32'h0000_0008;    // MIPS Stan
 
      Kernel memory starts at address 0x0. User memory starts at 'UMem_Lower' and extends to
      the end of the address space.
-     
+
      A distinction is made to protect against accesses to kernel memory while the processor
      is in user mode. Lacking MMU hardware, these addresses are physical, not virtual.
      This simple two-part division of the address space can be extended almost arbitrarily
@@ -265,7 +265,7 @@ parameter [4:0] AluOp_Xor    = 5'd31;
 
 
 // Movc:10->11, Trap:9->10, TrapCond:8->9, RegDst:7->8
-            
+
 /*** Datapath ***
 
      All Signals are Active High. Branching and Jump signals (determined by "PCSrc"),
@@ -521,7 +521,7 @@ parameter [2:0] EXC_Xori    = EXC_None;
 /*** Hazard & Forwarding Datapath ***
 
      All signals are Active High.
-     
+
      Bit  Meaning
      ------------
      7:   Wants Rs by ID
