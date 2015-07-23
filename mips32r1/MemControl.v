@@ -64,7 +64,7 @@ module MemControl(
     wire Word = ~(Half | Byte | Left | Right);
 
     // Exception Detection
-    wire EXC_KernelMem = ~KernelMode & (Address < UMem_Lower);
+    wire EXC_KernelMem = ~KernelMode & (Address < `UMem_Lower);
     wire EXC_Word = Word & (Address[1] | Address[0]);
     wire EXC_Half = Half & Address[0];
     assign EXC_AdEL = MemRead  & (EXC_KernelMem | EXC_Word | EXC_Half);

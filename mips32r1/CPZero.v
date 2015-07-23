@@ -221,7 +221,7 @@ module CPZero(
     // Configuration Register (Register 16, Select 0)
     wire Config_M = 1;
     wire [14:0] Config_Impl = 15'b000_0000_0000_0000;
-    wire Config_BE = Big_Endian;    // From parameters file
+    wire Config_BE = `Big_Endian;
     wire [1:0] Config_AT = 2'b00;
     wire [2:0] Config_AR = 3'b000;
     wire [2:0] Config_MT = 3'b000;
@@ -481,25 +481,25 @@ module CPZero(
     always @(*) begin
         // Following is redundant since PC has initial value now.
         if (reset) begin
-            Exc_PC_Out <= EXC_Vector_Base_Reset;
+            Exc_PC_Out <= `EXC_Vector_Base_Reset;
         end
         else if (ERET & ~ID_Stall) begin
             Exc_PC_Out <= (Status_ERL) ? ErrorEPC : EPC;
         end
         else if (EXC_General) begin
-            Exc_PC_Out <= (Status_BEV) ? (EXC_Vector_Base_Other_Boot   + EXC_Vector_Offset_General) :
-                                         (EXC_Vector_Base_Other_NoBoot + EXC_Vector_Offset_General);
+            Exc_PC_Out <= (Status_BEV) ? (`EXC_Vector_Base_Other_Boot   + `EXC_Vector_Offset_General) :
+                                         (`EXC_Vector_Base_Other_NoBoot + `EXC_Vector_Offset_General);
         end
         else if (EXC_NMI) begin
-            Exc_PC_Out <= EXC_Vector_Base_Reset;
+            Exc_PC_Out <= `EXC_Vector_Base_Reset;
         end
         else if (EXC_Int & Cause_IV) begin
-            Exc_PC_Out <= (Status_BEV) ? (EXC_Vector_Base_Other_Boot   + EXC_Vector_Offset_Special) :
-                                         (EXC_Vector_Base_Other_NoBoot + EXC_Vector_Offset_Special);
+            Exc_PC_Out <= (Status_BEV) ? (`EXC_Vector_Base_Other_Boot   + `EXC_Vector_Offset_Special) :
+                                         (`EXC_Vector_Base_Other_NoBoot + `EXC_Vector_Offset_Special);
         end
         else begin
-            Exc_PC_Out <= (Status_BEV) ? (EXC_Vector_Base_Other_Boot   + EXC_Vector_Offset_General) :
-                                         (EXC_Vector_Base_Other_NoBoot + EXC_Vector_Offset_General);
+            Exc_PC_Out <= (Status_BEV) ? (`EXC_Vector_Base_Other_Boot   + `EXC_Vector_Offset_General) :
+                                         (`EXC_Vector_Base_Other_NoBoot + `EXC_Vector_Offset_General);
         end
     end
 

@@ -332,7 +332,7 @@ module Processor(
     );
 
     /*** Program Counter (MIPS spec is 0xBFC00000 starting address) ***/
-    Register #(.WIDTH(32), .INIT(EXC_Vector_Base_Reset)) PC (
+    Register #(.WIDTH(32), .INIT(`EXC_Vector_Base_Reset)) PC (
         .clock   (clock),
         .reset   (reset),
         //.enable  (~IF_Stall),   // XXX verify. HERE. Was 1 but on stall latches PC+4, ad nauseum.
